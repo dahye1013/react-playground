@@ -1,0 +1,12 @@
+{
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+"[javascript]": {
+    "editor.formatOnSave": true
+  },
+   "[javascriptreact]": {
+    "editor.formatOnSave": true 
+  }
+}
