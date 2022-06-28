@@ -1,15 +1,16 @@
+import React from 'react';
 import ExpenseDate from './ExpenseDate';
 import './ExpenseItem.css';
 import Card from '../UI/Card';
 
-// need one root component for jsx code snippet
-const ExpenseItem = ({ title, amount, date }) => {
+// [StateLess Component] - not have any internal state
+const ExpenseItem = (expense) => {
   return (
     <Card className="expense-item">
-      <ExpenseDate date={date} />
+      <ExpenseDate date={expense.date} />
       <div className="expense-item__description">
-        <h2>{title}</h2>
-        <div className="expense-item__price">{amount}</div>
+        <h2>{expense.title}</h2>
+        <div className="expense-item__price">{expense.amount}</div>
       </div>
     </Card>
   );
