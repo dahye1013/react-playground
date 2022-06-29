@@ -28,7 +28,7 @@ const ExpenseForm = ({ onSaveExpenseDate, onEditing }) => {
     event.preventDefault();
     const expenseData = {
       title: userInput.enteredTitle,
-      amount: userInput.enteredAmount,
+      amount: Number(userInput.enteredAmount),
       date: new Date(userInput.enteredDate),
     };
     setUserInput({ enteredTitle: '', enteredAmount: '', enteredDate: '' });
