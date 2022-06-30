@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 
+import Wrapper from '../Helpers/Wrapper'
 import Card from '../UI/Card';
 import Button from '../UI/Button';
 import ErrorModal from '../UI/ErrorModal';
@@ -48,7 +49,7 @@ const AddUser = ({ onAddUser }) => {
   -> work with class names prop, apply a fitting css class
  */
   return (
-    <div>
+    <Wrapper>
       {error && <ErrorModal title={error.title} message={error.message} onConfirm={errorHandler} />}
       <Card className={classes.input}>
         <form onSubmit={addUserHandler}>
@@ -70,7 +71,7 @@ const AddUser = ({ onAddUser }) => {
           <Button type="submit">Add User</Button>
         </form>
       </Card>
-    </div>
+    </Wrapper>
   );
 };
 
