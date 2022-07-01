@@ -1,26 +1,32 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useRef } from 'react';
 
-import Wrapper from '../Helpers/Wrapper'
+import Wrapper from '../Helpers/Wrapper';
 import Card from '../UI/Card';
 import Button from '../UI/Button';
 import ErrorModal from '../UI/ErrorModal';
 import classes from './AddUser.module.css';
 
 const AddUser = ({ onAddUser }) => {
-  const [enteredUserInfo, setEnteredUserInfo] = useState({ username: '', age: '' });
-  const isValidUserInfo = useMemo(() => {
-    return (
-      enteredUserInfo.username.trim().length !== 0 &&
-      enteredUserInfo.age.trim().length !== 0 &&
-      +enteredUserInfo.age.trim() > 1
-    );
-  }, [enteredUserInfo]);
+  // relying on refs to read the values
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
+
+  const isValidUserInfo = (enteredUserInfo) => {
+    const { username, age } = enteredUserInfo;
+    return username.trim().length !== 0 && age.trim().length !== 0 && +age.trim() > 1;
+  };
+
   const [error, setError] = useState(null);
 
   const addUserHandler = (event) => {
     event.preventDefault();
 
-    if (!isValidUserInfo) {
+    const enteredUserInfo = {
+      username: nameInputRef.current.value,
+      age: ageInputRef.current.value,
+    };
+
+    if (!isValidUserInfo(enteredUserInfo)) {
       setError({
         title: 'Invalid input',
         message: 'Please enter a valid name and age(non-empty values)',
@@ -29,14 +35,8 @@ const AddUser = ({ onAddUser }) => {
     }
 
     onAddUser(enteredUserInfo);
-    setEnteredUserInfo({ username: '', age: '' });
-  };
-
-  const userNameChangeHandler = (event) => {
-    const { id, value } = event.target;
-    setEnteredUserInfo((prevUserInfo) => {
-      return { ...prevUserInfo, [id]: value };
-    });
+    nameInputRef.current.value = '';
+    ageInputRef.current.value = '';
   };
 
   const errorHandler = () => {
@@ -55,19 +55,9 @@ const AddUser = ({ onAddUser }) => {
         <form onSubmit={addUserHandler}>
           {/* htmlFor - prop name for assigning that for attribute to a label, which label belong  */}
           <label htmlFor="username">username</label>
-          <input
-            id="username"
-            type="text"
-            value={enteredUserInfo.username}
-            onChange={userNameChangeHandler}
-          ></input>
+          <input id="username" type="text" ref={nameInputRef}></input>
           <label htmlFor="age">Age (Years)</label>
-          <input
-            id="age"
-            type="number"
-            value={enteredUserInfo.age}
-            onChange={userNameChangeHandler}
-          ></input>
+          <input id="age" type="number" ref={ageInputRef}></input>
           <Button type="submit">Add User</Button>
         </form>
       </Card>
