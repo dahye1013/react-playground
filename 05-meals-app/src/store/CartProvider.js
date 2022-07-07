@@ -7,41 +7,51 @@ const defaultCartState = {
   totalPrice: 0,
 };
 
+const calcTotalAmount = (items = []) => {
+  return items.reduce((acc, cur) => acc + Number(cur['amount']), 0);
+};
+const calcTotalPrice = (items = []) => {
+  return items.reduce((acc, cur) => acc + Number(cur['price']) * Number(cur['amount']), 0);
+};
+
 const cartReducer = (state, action) => {
   if (action.type === 'ADD') {
     const { item: addedItem } = action;
     const existingCartItem = state.items.find((item) => item.id === addedItem.id);
 
-    if (!existingCartItem) {
-      return {
-        items: state.items.concat(addedItem),
-        totalAmount: Number(state.totalAmount) + Number(addedItem.amount),
-        totalPrice: Number(state.totalPrice) + Number(addedItem.price),
-      };
-    }
+    const newItems = !existingCartItem
+      ? state.items.concat(addedItem)
+      : state.items
+          .filter((item) => item.id !== addedItem.id)
+          .concat({
+            ...existingCartItem,
+            amount: Number(existingCartItem.amount) + Number(addedItem.amount),
+          });
 
-    const filteredItems = state.items.filter((item) => item.id !== addedItem.id);
     return {
-      items: [
-        ...filteredItems,
-        { ...existingCartItem, amount: Number(existingCartItem.amount) + Number(addedItem.amount) },
-      ],
-      totalAmount: Number(state.totalAmount) + Number(addedItem.amount),
-      totalPrice: Number(state.totalPrice) + Number(addedItem.price),
+      items: newItems,
+      totalAmount: calcTotalAmount(newItems),
+      totalPrice: calcTotalPrice(newItems),
     };
   }
 
   if (action.type === 'REMOVE') {
     const { id } = action;
 
-    let existingCartItem = state.items.find((item) => item.id === id);
-    existingCartItem = { ...existingCartItem, amount: (existingCartItem.amount -= 1) };
+    const existingCartItem = state.items.find((item) => item.id === id);
+    const hasAmount = existingCartItem.amount > 1;
+    const filteredCartItems = state.items.filter((item) => item.id !== id);
+    const newItems = !hasAmount
+      ? filteredCartItems
+      : filteredCartItems.concat({
+          ...existingCartItem,
+          amount: (existingCartItem.amount -= 1),
+        });
 
-    const filteredItems = state.items.filter((item) => item.id !== id);
     return {
-      items: [existingCartItem, ...filteredItems],
-      totalAmount: (state.totalAmount -= 1),
-      totalPrice: Number(state.totalPrice) + Number(existingCartItem.price),
+      items: newItems,
+      totalAmount: calcTotalAmount(newItems),
+      totalPrice: calcTotalPrice(newItems),
     };
   }
 

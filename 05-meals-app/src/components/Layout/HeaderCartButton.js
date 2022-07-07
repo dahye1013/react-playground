@@ -7,16 +7,13 @@ import classes from './HeaderCartButton.module.css';
 const HeaderCartButton = ({ onClick }) => {
   const [btnIsHighlighted, setBtnIsHighlighted] = useState(false);
   const cartContext = useContext(CartContext);
-  const { items } = cartContext;
-  const numberOfCartItems = items.reduce((curNumber, item) => {
-    return Number(curNumber) + Number(item.amount);
-  }, 0);
+  const { totalAmount } = cartContext;
 
   const buttonClass = `${classes.button} ${btnIsHighlighted && classes.bump}`;
 
   // not always add bump classes - only btnIsHighlighted
   useEffect(() => {
-    if (items.length === 0) return;
+    if (totalAmount === 0) return;
     setBtnIsHighlighted(true);
 
     /**
@@ -32,7 +29,7 @@ const HeaderCartButton = ({ onClick }) => {
     return () => {
       clearTimeout(timer);
     };
-  }, [items]);
+  }, [totalAmount]);
 
   return (
     <button className={buttonClass} onClick={onClick}>
@@ -40,7 +37,7 @@ const HeaderCartButton = ({ onClick }) => {
         <CartIcon />
       </span>
       <span>Your Cart</span>
-      <span className={classes.badge}>{numberOfCartItems}</span>
+      <span className={classes.badge}>{totalAmount}</span>
     </button>
   );
 };
