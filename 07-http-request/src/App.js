@@ -1,38 +1,36 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
 import MoviesList from './components/MoviesList';
+import AddMovie from './components/AddMovie';
+
 import './App.css';
-// https://swapi.dev/api/films
+
 const App = () => {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchMovieHandler = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
     try {
-      const res = await fetch('https://swapi.dev/api/films');
-      if (!res.ok) {
-        throw new Error('Http request Error');
-      }
+      setIsLoading(true);
+      setError(null);
+
+      const res = await fetch(process.env.REACT_APP_API_URL);
+
+      if (!res.ok) throw new Error('Http request Error');
+
       const data = await res.json();
-      const { results } = data;
-      const transformedMovies = results.map((movie) => {
-        return {
-          id: movie.episode_id,
-          title: movie.title,
-          openingText: movie.opening_crawl,
-          release_date: movie.release_date,
-          director: movie.director,
-          producer: movie.producer,
-        };
-      });
-      setMovies(transformedMovies);
+      const loadedMovies = Object.keys(data).reduce((acc, key) => {
+        acc.push({ id: key, title: data[key].title, openingText: data[key].title });
+        return acc;
+      }, []);
+
+      setMovies(loadedMovies);
     } catch (error) {
       setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   let content = <p>Found no movies...</p>;
@@ -57,8 +55,26 @@ const App = () => {
     fetchMovieHandler();
   }, [fetchMovieHandler]);
 
+  const addMovieHandler = async (movie) => {
+    try {
+      await fetch(process.env.REACT_APP_API_URL, {
+        method: 'POST',
+        body: JSON.stringify(movie),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      fetchMovieHandler();
+    } catch (error) {
+      alert('Something wrong happened');
+    }
+  };
+
   return (
     <React.Fragment>
+      <section>
+        <AddMovie onAddMovie={addMovieHandler} />
+      </section>
       <section>
         <button onClick={fetchMovieHandler}>Fetch Movies</button>
       </section>
