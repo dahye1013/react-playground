@@ -38,6 +38,7 @@ const Cart = ({ onClose }) => {
     });
     setIsSubmitting(false);
     setDidSubmit(true);
+    cartContext.clearCart();
   };
 
   // render conditionally if not isCheckout
