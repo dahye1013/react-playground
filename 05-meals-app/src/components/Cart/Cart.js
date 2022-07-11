@@ -8,6 +8,9 @@ import CartContext from '../../store/cart-context';
 
 const Cart = ({ onClose }) => {
   const [isCheckout, setIsCheckout] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [didSubmit, setDidSubmit] = useState(false);
+
   const cartContext = useContext(CartContext);
   const totalPrice = `${cartContext.totalPrice}`;
   const hasItems = cartContext.items.length > 0;
@@ -22,6 +25,19 @@ const Cart = ({ onClose }) => {
 
   const orderHandler = () => {
     setIsCheckout(true);
+  };
+
+  const submitOrderHandler = (userData) => {
+    setIsSubmitting(true);
+    fetch(process.env.REACT_APP_API_URL + 'order.json', {
+      method: 'POST',
+      body: JSON.stringify({
+        user: userData,
+        orderedItem: cartContext.items,
+      }),
+    });
+    setIsSubmitting(false);
+    setDidSubmit(true);
   };
 
   // render conditionally if not isCheckout
@@ -54,15 +70,37 @@ const Cart = ({ onClose }) => {
       ))}
     </ul>
   );
-  return (
-    <Modal onClose={onClose}>
+
+  // not allow sibling jsx code
+  const cartModalContent = (
+    <React.Fragment>
       {carItems}
       <div className={classes.total}>
         <span>Total Price</span>
         <span>{totalPrice}</span>
       </div>
-      {isCheckout && <Checkout onCancel={onClose} />}
+      {isCheckout && <Checkout onCancel={onClose} onConfirm={submitOrderHandler} />}
       {!isCheckout && modalAction}
+    </React.Fragment>
+  );
+
+  const isSubmittingModalContent = <p>Sending order Data</p>;
+  const didSubmitModalContent = (
+    <React.Fragment>
+      <p>Successfully sent the order! 📝👏</p>
+      <div className={classes.actions}>
+        <button className={classes['button--alt']} onClick={onClose}>
+          Close
+        </button>
+      </div>
+    </React.Fragment>
+  );
+
+  return (
+    <Modal onClose={onClose}>
+      {!isSubmitting && !didSubmit && cartModalContent}
+      {isSubmitting && isSubmittingModalContent}
+      {!isSubmitting && didSubmit && didSubmitModalContent}
     </Modal>
   );
 };

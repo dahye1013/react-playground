@@ -4,7 +4,7 @@ import classes from './Checkout.module.css';
 const isEmpty = (value) => value.trim() === '';
 const isFiveChars = (value) => value.trim().length === 5;
 
-const Checkout = ({ onClose }) => {
+const Checkout = ({ onClose, onConfirm }) => {
   const [formInputsValidity, setFormInputsValidity] = useState({
     name: false,
     street: false,
@@ -22,7 +22,6 @@ const Checkout = ({ onClose }) => {
     const enteredStreet = streetInputRef.current.value;
     const enteredPostalCode = postalCodeInputRef.current.value;
     const enteredCity = cityInputRef.current.value;
-    debugger;
 
     const enteredNameIsValid = !isEmpty(enteredName);
     const enteredStreetIsValid = !isEmpty(enteredStreet);
@@ -35,7 +34,20 @@ const Checkout = ({ onClose }) => {
       city: enteredCityIsValid,
       postalCode: enteredPostalIsValid,
     });
+
+    const formIsValid =
+      enteredNameIsValid && enteredStreetIsValid && enteredPostalIsValid && enteredCityIsValid;
+
+    if (!formIsValid) return;
+
+    onConfirm({
+      name: enteredName,
+      street: enteredStreet,
+      city: enteredPostalCode,
+      postalCode: enteredCity,
+    });
   };
+
   return (
     <form className={classes.form} onSubmit={confirmHandler}>
       <div className={`${classes.control} ${!formInputsValidity.name && classes.invalid}`}>
