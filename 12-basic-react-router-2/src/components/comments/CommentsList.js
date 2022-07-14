@@ -1,8 +1,7 @@
 import CommentItem from './CommentItem';
 import classes from './CommentsList.module.css';
 
-const CommentsList = (props) => {
-  const { comments = [{ id: '1', text: 'text' }] } = props;
+const CommentsList = ({ comments }) => {
   return (
     <ul className={classes.comments}>
       {comments.map((comment) => (
