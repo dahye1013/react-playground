@@ -1,30 +1,48 @@
-import Head from 'next/head';
-import Image from 'next/image';
-import styles from '../styles/Home.module.css';
+/******
+ * import in page component file, if use only for 'getServerSideProps' or 'getServerSideProps'
+ * -> imported package will not be part of client side bundle.
+ * -> only executed in server. nextJS will detect this not include it in client's side bundle.
+ * => good for bundle size,
+ * => good for security,
+ */
+import { MongoClient } from 'mongodb';
 import MeetupList from '../components/meetups/MeetupList';
-import Layout from '../components/layout/Layout';
 
-const DUMMY_MEETUPS = [
-  {
-    id: 'm1',
-    title: 'a first meetup',
-    image:
-      'https://images.unsplash.com/photo-1657828514287-3fd45486c5c0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80',
-    address: 'some address 6 ,123',
-    description: 'description',
-  },
-  {
-    id: 'm1',
-    title: 'a first meetup',
-    image:
-      'https://images.unsplash.com/photo-1657788913414-2e6f7471f53b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1072&q=80',
-    address: 'some address 6 ,123',
-    description: 'description',
-  },
-];
+/**
+ * [http request update state]
+ * 1. first when component is rendered first data is empty
+ * 2. effect function execute it update state
+ * 3. component function will execute again (because state changed)
+ * 4. re-rendered with the actual data
+ * => two component render cycle
+ * => problem of SEO problem
+ * html page we fetch from the
+ *
+ */
 
-const HomePage = () => {
-  return <MeetupList meetups={DUMMY_MEETUPS} />;
+const HomePage = (props) => {
+  return <MeetupList meetups={props.meetups} />;
+};
+
+// run on server never in client - run server side code here perform operation that use credentials
+export const getStaticProps = async () => {
+  const client = await MongoClient.connect(process.env.NEXT_PUBLIC_MONGO_DB_URL);
+
+  const db = client.db();
+  const meetupsCollection = db.collection('meetups');
+  const meetups = await meetupsCollection.find().toArray();
+
+  return {
+    props: {
+      meetups: meetups.map((meetup) => ({
+        title: meetup.title,
+        address: meetup.address,
+        image: meetup.image,
+        id: meetup._id.toString(),
+      })),
+    },
+    revalidate: 1,
+  };
 };
 
 export default HomePage;
