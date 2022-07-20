@@ -1,6 +1,7 @@
 import React from 'react';
 import type Todo from '../models/todo';
 import TodoItem from './TodoItem';
+import classes from './Todos.module.css';
 /**
  * [React.FC]
  * - generic type assignment
@@ -17,12 +18,13 @@ import TodoItem from './TodoItem';
  * @returns
  */
 
-const Todos: React.FC<{ todos: Todo[] }> = (props) => {
+const Todos: React.FC<{ todos: Todo[]; onRemoveTodo: (id: string) => void }> = (props) => {
   return (
-    <ul>
+    <ul className={classes.todos}>
       {/* can use auto complication */}
       {props.todos.map((todo) => (
-        <TodoItem todo={todo} />
+        // pre-config using by bind
+        <TodoItem key={todo.id} todo={todo} onRemoveTodo={props.onRemoveTodo.bind(null, todo.id)} />
       ))}
     </ul>
   );

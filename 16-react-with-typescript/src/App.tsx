@@ -12,7 +12,6 @@ const App = () => {
    * - useState out of box is generic function
    * - can set type of data
    */
-
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const addTodoHandler = (todoText: string) => {
@@ -22,10 +21,16 @@ const App = () => {
     });
   };
 
+  const removeTodoHandler = (id: string) => {
+     setTodos((prevTodos) => {
+      return prevTodos.filter((todo) => id !== todo.id);
+    });
+  };
+
   return (
     <div>
       <NewTodo onAddTodo={addTodoHandler} />
-      <Todos todos={todos} />
+      <Todos todos={todos} onRemoveTodo={removeTodoHandler} />
     </div>
   );
 };

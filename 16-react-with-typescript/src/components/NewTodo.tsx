@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import classes from './NewTodo.module.css';
 
 const NewTodo: React.FC<{ onAddTodo: (text: string) => void }> = (props) => {
   // useRef hook need to set the concrete type of ref
@@ -24,7 +25,7 @@ const NewTodo: React.FC<{ onAddTodo: (text: string) => void }> = (props) => {
   };
 
   return (
-    <form onSubmit={submitHandler} ref={todoFormRef}>
+    <form onSubmit={submitHandler} className={classes.form} ref={todoFormRef}>
       <label>Todo Text</label>
       <input type="text" id="text" ref={todoTextInputRef} />
       <button>Add Todo</button>
