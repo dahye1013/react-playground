@@ -1,7 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useContext } from 'react';
 import classes from './NewTodo.module.css';
 
-const NewTodo: React.FC<{ onAddTodo: (text: string) => void }> = (props) => {
+import { TodosContext } from '../store/todos-context';
+
+const NewTodo: React.FC = () => {
+  const todoContext = useContext(TodosContext);
+
   // useRef hook need to set the concrete type of ref
   // -> at the beginning there is no connection
   // => should set initial value as null
@@ -20,7 +24,7 @@ const NewTodo: React.FC<{ onAddTodo: (text: string) => void }> = (props) => {
       return;
     }
 
-    props.onAddTodo(enteredText);
+    todoContext.addTodo(enteredText);
     todoFormRef.current!.reset();
   };
 

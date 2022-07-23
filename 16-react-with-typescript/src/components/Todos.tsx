@@ -1,7 +1,8 @@
-import React from 'react';
-import type Todo from '../models/todo';
+import React, { useContext } from 'react';
 import TodoItem from './TodoItem';
 import classes from './Todos.module.css';
+
+import { TodosContext } from '../store/todos-context';
 /**
  * [React.FC]
  * - generic type assignment
@@ -18,13 +19,18 @@ import classes from './Todos.module.css';
  * @returns
  */
 
-const Todos: React.FC<{ todos: Todo[]; onRemoveTodo: (id: string) => void }> = (props) => {
+const Todos: React.FC = () => {
+  const todoContext = useContext(TodosContext);
   return (
     <ul className={classes.todos}>
       {/* can use auto complication */}
-      {props.todos.map((todo) => (
+      {todoContext.items.map((todo) => (
         // pre-config using by bind
-        <TodoItem key={todo.id} todo={todo} onRemoveTodo={props.onRemoveTodo.bind(null, todo.id)} />
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          onRemoveTodo={todoContext.removeTodo.bind(null, todo.id)}
+        />
       ))}
     </ul>
   );
